@@ -1,13 +1,17 @@
 import React, { Component } from 'react';
-import i18n from "i18n-js"
+import i18n from "i18n-js";
+import addPersonals from '../../libs/test-redux/actions/actions-test'
 import {
   MenuButton,
   ListItem,
   ExpansionList,
   ExpansionPanel,
-  Slider
+  Slider,
+  TextField,
+  Button
 } from 'react-md';
 import cn from 'classnames';
+import { connect } from 'react-redux'
 
 
 import l from "../../libs/langs/keys"
@@ -16,18 +20,58 @@ class Test extends Component {
   constructor(props){
     super()
     this.state={
-      counter:0
+      counter:0,
+      personalState:''
     }
+  }
+  handleChange =(val)=>{
+    this.setState({personalState:val})
   }
   handleClick = ()=>{
     this.setState({counter:this.state.counter+1})
   }
+  handleClickSave =()=>{
+    const {personalState} = this.state
+    const {addPersonalsProps} = this.props
+    addPersonalsProps(personalState)
+    this.setState({personalState:''})
+  }
   render() {
-    const {counter} =this.state
+    const { personals } =this.props
+    const {counter,personalState} =this.state
     return (
       <div>
         <button onClick={this.handleClick}>cc</button>
         <Header counter={counter}/>
+        <div>
+          <h1>test redux</h1>
+          <TextField
+            id="floating-password"
+            label="Enter your text"
+            type="text"
+            value={personalState}
+            className="md-cell md-cell--bottom"
+            onChange={this.handleChange}
+          />
+          <Button 
+            flat 
+            primary 
+            swapTheming
+            onClick={this.handleClickSave}
+          >
+            {i18n.t(l.addNewPersonalButton)}
+          </Button>
+          <h2>list of personals</h2>
+          {
+            personals&&personals.map(personal=>{
+              return (
+                <div>
+                  <label>{personal}</label>
+                </div>
+              )
+            })
+          }
+        </div>
       </div>
     );
   }
@@ -36,7 +80,7 @@ class Header extends Component {
   constructor(props){
     super()
     this.state={
-      childCounter:1
+      childCounter:1,
     }
   }
   handleClick=()=>{
@@ -56,6 +100,7 @@ class Header extends Component {
     }
   }
   render(){
+    if(this.props.personals)console.log(this.props.personals)
     const {counter} = this.props
     const {childCounter} = this.state
     return(
@@ -103,4 +148,16 @@ class Header extends Component {
     )
   }
 }
-export default Test;
+const mapStateToProps = state => {
+  return {
+    personals: state.getAndAddList
+  }
+}
+const mapDispatchToProps = dispatch => {
+  return {
+    addPersonalsProps: id => {
+      dispatch(addPersonals(id))
+    }
+  }
+}
+export default connect(mapStateToProps,mapDispatchToProps)(Test)

@@ -7,4 +7,5 @@ export default {
     },
   },
   [l.addCounterButton]: "Nouvelle réponse",
+  [l.addNewPersonalButton]: "Ajouter nouvel personne",
 }
